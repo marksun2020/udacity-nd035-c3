@@ -14,6 +14,7 @@ import java.time.format.TextStyle;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Transactional
 @Service
 public class UserService {
     private final CustomerRepository customerRepository;
@@ -34,7 +35,6 @@ public class UserService {
         return this.employeeRepository.save(employee);
     }
 
-    @Transactional
     public List<Customer> getAllCustomers() {
         final List<Pet> pets = this.petRepository.findAll();
         final List<Customer> customers = this.customerRepository.findAll();
@@ -43,7 +43,6 @@ public class UserService {
         return customers;
     }
 
-    @Transactional
     public Customer getOwnerByPet(long petId) {
         Customer customer = this.customerRepository.getCustomerByPetId(petId);
         Set<Pet> pets = this.petRepository.getPetsByOwnerId(customer.getId());
