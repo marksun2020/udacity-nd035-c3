@@ -1,5 +1,7 @@
 package com.udacity.jdnd.course3.critter.user;
 
+import org.springframework.beans.BeanUtils;
+
 import java.time.DayOfWeek;
 import java.util.Set;
 
@@ -43,5 +45,19 @@ public class EmployeeDTO {
 
     public void setDaysAvailable(Set<DayOfWeek> daysAvailable) {
         this.daysAvailable = daysAvailable;
+    }
+
+    public static EmployeeDTO fromEntity(Employee employee) {
+        EmployeeDTO dto = new EmployeeDTO();
+        if (employee != null) {
+            BeanUtils.copyProperties(employee, dto);
+        }
+        return dto;
+    }
+
+    public Employee toEntity() {
+        Employee employee = new Employee();
+        BeanUtils.copyProperties(this, employee);
+        return employee;
     }
 }

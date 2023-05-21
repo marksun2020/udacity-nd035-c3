@@ -1,20 +1,34 @@
 package com.udacity.jdnd.course3.critter.pet;
 
+import com.udacity.jdnd.course3.critter.schedule.Schedule;
 import com.udacity.jdnd.course3.critter.user.Customer;
-import org.springframework.beans.BeanUtils;
+import org.hibernate.annotations.Nationalized;
 
+import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.Set;
 
-/**
- * Represents the form that pet request and response data takes. Does not map
- * to the database directly.
- */
-public class PetDTO {
-    private long id;
+@Entity
+public class Pet {
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long id;
+
+    @Enumerated(EnumType.STRING)
     private PetType type;
+
+    @Nationalized
     private String name;
-    private long ownerId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "customer_id")
+    private Customer owner;
+
+    @ManyToMany(mappedBy = "pets")
+    private Set<Schedule> schedules;
+
     private LocalDate birthDate;
+    @Nationalized
     private String notes;
 
     public PetType getType() {
@@ -33,12 +47,12 @@ public class PetDTO {
         this.name = name;
     }
 
-    public long getOwnerId() {
-        return ownerId;
+    public Customer getOwner() {
+        return owner;
     }
 
-    public void setOwnerId(long ownerId) {
-        this.ownerId = ownerId;
+    public void setOwner(Customer owner) {
+        this.owner = owner;
     }
 
     public LocalDate getBirthDate() {
@@ -65,21 +79,11 @@ public class PetDTO {
         this.id = id;
     }
 
-    public static PetDTO fromEntity(Pet pet) {
-        PetDTO dto = new PetDTO();
-        BeanUtils.copyProperties(pet, dto);
-        dto.setOwnerId(pet.getOwner() == null ? 0 : pet.getOwner().getId());
-        return dto;
+    public Set<Schedule> getSchedules() {
+        return schedules;
     }
 
-    public Pet toEntity() {
-        Pet pet = new Pet();
-        BeanUtils.copyProperties(this, pet);
-        if (this.ownerId != 0) {
-            Customer customer = new Customer();
-            customer.setId(this.ownerId);
-            pet.setOwner(customer);
-        }
-        return pet;
+    public void setSchedules(Set<Schedule> schedules) {
+        this.schedules = schedules;
     }
 }
